@@ -1,0 +1,154 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+class StudentGradeTrackerGUI extends JFrame {
+
+    private JTextField gradeTextField;
+    private JTextArea resultTextArea;
+    private ArrayList<Double> grades;
+    private JButton addButton;
+    private JButton calculateButton;
+
+    public StudentGradeTrackerGUI() {
+        setTitle(" Student Grade Tracker");
+        setSize(300, 500);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        grades = new ArrayList<>();
+
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new GridBagLayout());
+        mainPanel.setBackground(new Color(255, 240, 245)); // Light Pink (LavenderBlush)
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.anchor = GridBagConstraints.WEST;
+
+        JLabel gradeLabel = new JLabel("Grade:");
+        gradeLabel.setForeground(new Color(221, 160, 221)); // Light Purple (Plum)
+        mainPanel.add(gradeLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        gradeTextField = new JTextField(15);
+        mainPanel.add(gradeTextField, gbc);
+
+        gbc.gridx = 2;
+        gbc.weightx = 0;
+        addButton = new JButton("Add");
+        addButton.setBackground(new Color(221, 160, 221)); // Light Purple (Plum)
+        addButton.setForeground(Color.WHITE);
+        mainPanel.add(addButton, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 3;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weighty = 1.0;
+        resultTextArea = new JTextArea();
+        resultTextArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(resultTextArea);
+        mainPanel.add(scrollPane, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 3;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weighty = 0;
+        calculateButton = new JButton("Calculate Results");
+        calculateButton.setBackground(new Color(221, 160, 221)); // Light Purple (Plum)
+        calculateButton.setForeground(Color.WHITE);
+        mainPanel.add(calculateButton, gbc);
+
+        add(mainPanel);
+
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleAddGrade();
+            }
+        });
+
+        calculateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleCalculate();
+            }
+        });
+    }
+
+    private void handleAddGrade() {
+        try {
+            double grade = Double.parseDouble(gradeTextField.getText());
+            grades.add(grade);
+            resultTextArea.append("Grade added: " + grade + "\n");
+            gradeTextField.setText("");
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(StudentGradeTrackerGUI.this, "Invalid input. Please enter a number.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void handleCalculate() {
+        if (grades.isEmpty()) {
+            resultTextArea.append("No grades entered.\n");
+            return;
+        }
+
+        double average = calculateAverage(grades);
+        double highest = calculateHighest(grades);
+        double lowest = calculateLowest(grades);
+
+        resultTextArea.append("\nResults:\n");
+        resultTextArea.append("Average: " + average + "\n");
+        resultTextArea.append("Highest: " + highest + "\n");
+        resultTextArea.append("Lowest: " + lowest + "\n");
+    }
+
+    private double calculateAverage(ArrayList<Double> grades) {
+        if (grades.isEmpty()) {
+            return 0;
+        }
+        double sum = 0;
+        for (double grade : grades) {
+            sum += grade;
+        }
+        return sum / grades.size();
+    }
+
+    private double calculateHighest(ArrayList<Double> grades) {
+        if (grades.isEmpty()) {
+            return 0;
+        }
+        double highest = grades.get(0);
+        for (double grade : grades) {
+            if (grade > highest) {
+                highest = grade;
+            }
+        }
+        return highest;
+    }
+
+    private double calculateLowest(ArrayList<Double> grades) {
+        if (grades.isEmpty()) {
+            return 0;
+        }
+        double lowest = grades.get(0);
+        for (double grade : grades) {
+            if (grade < lowest) {
+                lowest = grade;
+            }
+        }
+        return lowest;
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new StudentGradeTrackerGUI().setVisible(true));
+    }
+}
